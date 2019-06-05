@@ -1,0 +1,48 @@
+---
+- name: Remove any mariadb packages
+  command: yum erase -y mariadb*
+
+- name: Install MySQL-python
+  yum:
+    name: MySQL-python
+    state: present
+
+- name: Install Percona Repo
+  yum: 
+    name: "{{ percona_repo }}"
+    state: present
+
+- name: Configure Percona Repo 
+  command: "percona-release setup {{ percona_release }}"
+
+- name: Install Percona Cluster
+  yum:
+    name: "{{ percona_package }}"
+    state: present
+
+- name: Configure Percona Cluster
+  template:
+    src: my.cnf.j2
+    dest: /etc/my.cnf
+
+- name: Start Percona Cluster Bootstrap
+  service:
+    name: mysql@bootstrap.service
+    state: started
+    enabled: no
+
+- name: Set MySQL password root
+  mysql_user:
+    name: root
+    password: "{{ percona_root_pass }}"
+
+- name: Configure MySQL Client
+  template:
+    src: client.cnf.j2
+    dest: /root/.my.cnf
+
+- name: Configure MySQL SST user
+  mysql_user:
+    name: "{{ percona_sst_user }}"
+    password: "{{ percona_sst_pass }}"
+    priv: "*.*:PROCESS,RELOAD,LOCK TABLES,REPLICATION CLIENT"

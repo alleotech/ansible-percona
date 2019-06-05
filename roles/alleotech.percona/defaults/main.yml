@@ -1,0 +1,16 @@
+---
+percona_repo: https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+percona_version: 56
+percona_release: "pxc{{ percona_version }}"
+percona_package: "Percona-XtraDB-Cluster-{{ percona_version }}"
+
+percona_root_pass: MasterPass
+
+percona_sst_user: sstuser
+percona_sst_pass: sstpass
+
+percona_cluster_name: Cluster
+percona_cluster_address: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+
+percona_node_name: "{{ ansible_hostname }}"
+percona_node_address: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"

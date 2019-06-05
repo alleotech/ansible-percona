@@ -1,0 +1,43 @@
+---
+- name: Remove any mariadb packages
+  command: yum erase -y mariadb*
+
+- name: Install MySQL-python
+  yum:
+    name: MySQL-python
+    state: present
+
+- name: Install Percona Repo
+  yum: 
+    name: "{{ percona_repo }}"
+    state: present
+
+- name: Configure Percona Repo 
+  command: "percona-release setup {{ percona_release }}"
+
+- name: Install Percona Cluster
+  yum:
+    name: "{{ percona_package }}"
+    state: present
+
+- name: Configure Percona Cluster
+  template:
+    src: my.cnf.j2
+    dest: /etc/my.cnf
+
+- name: Ensure Percona Cluster Bootstrap is disabled
+  service:
+    name: mysql@bootstrap.service
+    enabled: no
+    state: stopped
+
+- name: Ensure Percona Cluster is enabled
+  service:
+    name: mysql
+    enabled: yes
+    state: started
+
+- name: Configure MySQL Client
+  template:
+    src: client.cnf.j2
+    dest: /root/.my.cnf
