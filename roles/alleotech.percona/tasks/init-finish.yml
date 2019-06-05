@@ -1,0 +1,31 @@
+---
+- name: Check cluster members
+  shell: "mysql -e \"show status like 'wsrep_incoming_addresses';\" | grep -v '+' | tail -1 | sed -En 's/^.*\\s+(.*)/\\1/p'"
+  register: percona_state
+
+- set_fact:
+    cluster_count: "{{ percona_state.stdout.split(',') | length }}"
+    cluster_address: "{{ percona_state.stdout | regex_replace(':3306') }}"
+
+- fail:
+    msg: "Cluster not initialized yet, please run task later"
+  when: cluster_count == 1
+
+- name: "Configure cluster address [{{ cluster_address }}]"
+  lineinfile:
+    path: /etc/my.cnf
+    state: present
+    regexp: '^wsrep_cluster_address\s*='
+    line: 'wsrep_cluster_address = gcomm://{{ cluster_address }}'
+
+- name: Stop Percona Cluster Bootstrap
+  service:
+    name: mysql@bootstrap.service
+    state: stopped
+    enabled: no
+
+- name: Ensure Percona Cluster is enabled
+  service:
+    name: mysql
+    enabled: yes
+    state: started
