@@ -7,6 +7,15 @@
     name: MySQL-python
     state: present
 
+- name: Check if MySQL DB already present
+  stat:
+    path: /var/lib/mysql/mysql
+    get_attributes: no
+    get_checksum: no
+    get_md5: no
+    get_mime: no
+  register: mysql_state
+
 - name: Install Percona Repo
   yum: 
     name: "{{ percona_repo }}"
@@ -35,6 +44,7 @@
   mysql_user:
     name: root
     password: "{{ percona_root_pass }}"
+  when: not mysql_state.stat.exists
 
 - name: Configure MySQL Client
   template:
