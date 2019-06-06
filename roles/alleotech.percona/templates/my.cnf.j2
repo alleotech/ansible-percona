@@ -5,6 +5,9 @@
 
 log_bin
 
+ignore-db-dir=lost+found
+ignore-db-dir=test
+
 binlog_format                  = ROW
 innodb_buffer_pool_size        = 100M
 innodb_flush_log_at_trx_commit = 0
