@@ -26,8 +26,16 @@
 
 - name: Install Percona Cluster
   yum:
-    name: "{{ percona_package }}"
+    name: 
+      - "{{ percona_package }}"
+      - percona-toolkit
     state: present
+
+- name: Download mysql tunner script
+  get_url:
+    url: http://mysqltuner.pl/
+    dest: /root/mysqltuner.pl
+    mode: 0770
 
 - name: Configure Percona Cluster
   template:
@@ -44,6 +52,7 @@
   mysql_user:
     name: root
     password: "{{ percona_root_pass }}"
+    priv: "*.*:ALL,GRANT"
   when: not mysql_state.stat.exists
 
 - name: Configure MySQL Client

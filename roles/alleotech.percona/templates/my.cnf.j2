@@ -20,7 +20,7 @@ datadir                        = /var/lib/mysql
 wsrep_cluster_address          = gcomm://{{ percona_cluster_address }}
 wsrep_provider                 = /usr/lib64/galera3/libgalera_smm.so
 
-wsrep_slave_threads            = 8
+wsrep_slave_threads            = 4
 wsrep_cluster_name             = {{ percona_cluster_name }}
 wsrep_node_name                = {{ percona_node_name }}
 wsrep_node_address	       = {{ percona_node_address }}
