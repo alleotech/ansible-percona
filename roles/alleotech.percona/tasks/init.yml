@@ -42,7 +42,12 @@
     src: my.cnf.j2
     dest: /etc/my.cnf
 
-- name: Start Percona Cluster Bootstrap
+- name: Ensure MySQL is not running
+  service:
+    name: mysql
+    state: stopped
+
+- name: Start MySQL in Bootstrap Mode
   service:
     name: mysql@bootstrap.service
     state: started
@@ -53,6 +58,7 @@
     name: root
     password: "{{ percona_root_pass }}"
     priv: "*.*:ALL,GRANT"
+    host: '%'
   when: not mysql_state.stat.exists
 
 - name: Configure MySQL Client
