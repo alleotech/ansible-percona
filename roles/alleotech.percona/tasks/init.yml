@@ -52,8 +52,16 @@
     name: mysql@bootstrap.service
     state: started
     enabled: no
+    
+- name: Set MySQL password root (from localhost)
+  mysql_user:
+    name: root
+    password: "{{ percona_root_pass }}"
+    priv: "*.*:ALL,GRANT"
+    host: 'localhost'
+  when: not mysql_state.stat.exists
 
-- name: Set MySQL password root
+- name: Set MySQL password root (from anywhere)
   mysql_user:
     name: root
     password: "{{ percona_root_pass }}"
