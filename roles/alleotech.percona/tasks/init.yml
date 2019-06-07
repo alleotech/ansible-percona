@@ -60,6 +60,11 @@
     priv: "*.*:ALL,GRANT"
     host: 'localhost'
   when: not mysql_state.stat.exists
+  
+- name: Configure MySQL Client
+  template:
+    src: client.cnf.j2
+    dest: /root/.my.cnf
 
 - name: Set MySQL password root (from anywhere)
   mysql_user:
@@ -68,11 +73,6 @@
     priv: "*.*:ALL,GRANT"
     host: '%'
   when: not mysql_state.stat.exists
-
-- name: Configure MySQL Client
-  template:
-    src: client.cnf.j2
-    dest: /root/.my.cnf
 
 - name: Configure MySQL SST user
   mysql_user:
